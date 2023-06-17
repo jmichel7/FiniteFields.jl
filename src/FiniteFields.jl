@@ -1,4 +1,3 @@
-include("Modulo.jl")
 """
 This   package  introduces  finite  fields   using  the  GAP  syntex.  This
 compatibility   with  GAP  is  the  motivation  not  to  use  the  existing
@@ -123,7 +122,8 @@ julia> inv(m)*m
 ```
 """
 module FiniteFields
-using ..Modulo
+include("Modulo.jl")
+using .Modulo
 export Mod, order
 using Primes: factor, eachfactor, totient
 # next can be used from Primes when exported there
