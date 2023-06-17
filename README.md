@@ -10,9 +10,11 @@
 
 
 
-This   package  introduces  finite  fields   using  the  GAP  syntex.  This compatibility   with  GAP  is  the  motivation  not  to  use  the  existing `GaloisFields`.  This package has  no dependencies part  from `Primes`. The speed  is comparable with `GaloisFields`,  slightly slower for prime fields and  faster for  composite fields.  Lke GAP3,  we only implements fields of order  less  than  2^16.  This  package  comes  with  the  module  `Modulo` implementing  modular arithmetic  without restriction  on the  modulus (the modulus can be a `BigInt`).
+This   package  introduces  finite  fields   using  the  GAP  syntax.  This compatibility   with  GAP  is  the  motivation  not  to  use  the  existing `GaloisFields`.  The  speed  is  comparable  with  `GaloisFields`, slightly slower  for prime fields and faster for composite fields. Lke GAP3, we only implement  fields  of  order  less  than  2^16. This package comes with the module  `Modulo` implementing modular arithmetic without restriction on the modulus (the modulus can be a `BigInt`).
 
-The  Galois field with `p^n` elements is obtained as `GF(p^n)`. Elements of Galois  fields of characteristic `p` have all the same type, the parametric type   `FFE{p}`.  The  function   `Z(p^n)`  returns  a   generator  of  the multiplicative group of `GF(p^n)`. Other elements of `GF(p^n)` are obtained as  powers of `Z(p^n)`, except `0`, obtained as `0*Z(p^n)`. Elements of the prime  field can  also be  obtained as  `FFE{p}(n)` (which  is the  same as n*Z(p)^0`).
+This only dependency of this package is `Primes`.
+
+The Galois field with `p^n` elements is obtained as `GF(p^n)`. All elements of  Galois fields of characteristic `p`  have the same type, the parametric type   `FFE{p}`.  The  function   `Z(p^n)`  returns  a   generator  of  the multiplicative group of `GF(p^n)`. Other elements of `GF(p^n)` are obtained as  powers of `Z(p^n)`, except `0`, obtained as `0*Z(p^n)`. Elements of the prime  field can  also be  obtained as  `FFE{p}(n)` (which  is the  same as `n*Z(p)^0`).
 
 ```julia-repl
 julia> a=Z(64)
@@ -119,6 +121,9 @@ julia> inv(m)*m
  0  0  0  1
 ```
 
+
+<a target='_blank' href='https://github.com/jmichel7/FiniteFields.jl/blob/8ba4ffa053e38752a5c1f385bbd2cabd70c211ff/src/FiniteFields.jl#L1-L124' class='documenter-source'>source</a><br>
+
 <a id='FiniteFields.FFE' href='#FiniteFields.FFE'>#</a>
 **`FiniteFields.FFE`** &mdash; *Type*.
 
@@ -126,12 +131,18 @@ julia> inv(m)*m
 
 `FFE{p}` is the type of the elements of a finite field of characteristic `p`.
 
+
+<a target='_blank' href='https://github.com/jmichel7/FiniteFields.jl/blob/8ba4ffa053e38752a5c1f385bbd2cabd70c211ff/src/FiniteFields.jl#L258-L260' class='documenter-source'>source</a><br>
+
 <a id='FiniteFields.FFE-Tuple{Integer}' href='#FiniteFields.FFE-Tuple{Integer}'>#</a>
 **`FiniteFields.FFE`** &mdash; *Method*.
 
 
 
 `FFE{p}(i)`  for `i` an integer or a fraction with denominator prime to `p` returns the reduction mod `p` of `i`, an element of the prime field `𝔽ₚ`.
+
+
+<a target='_blank' href='https://github.com/jmichel7/FiniteFields.jl/blob/8ba4ffa053e38752a5c1f385bbd2cabd70c211ff/src/FiniteFields.jl#L439-L442' class='documenter-source'>source</a><br>
 
 <a id='FiniteFields.Z-Tuple{Any}' href='#FiniteFields.Z-Tuple{Any}'>#</a>
 **`FiniteFields.Z`** &mdash; *Method*.
@@ -151,6 +162,9 @@ FFE{2}: Z₁₆
 julia> z^5
 FFE{2}: Z₄
 ```
+
+
+<a target='_blank' href='https://github.com/jmichel7/FiniteFields.jl/blob/8ba4ffa053e38752a5c1f385bbd2cabd70c211ff/src/FiniteFields.jl#L344-L368' class='documenter-source'>source</a><br>
 
 
 <a id='Modular-numbers'></a>
@@ -198,4 +212,7 @@ julia> Integer(a) # get back an integer from a
 julia> order(a) # multiplicative order of a
 9
 ```
+
+
+<a target='_blank' href='https://github.com/jmichel7/FiniteFields.jl/blob/8ba4ffa053e38752a5c1f385bbd2cabd70c211ff/src/Modulo.jl#L1-L41' class='documenter-source'>source</a><br>
 

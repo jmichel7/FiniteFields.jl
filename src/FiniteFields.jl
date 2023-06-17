@@ -1,20 +1,21 @@
 """
-This   package  introduces  finite  fields   using  the  GAP  syntex.  This
+This   package  introduces  finite  fields   using  the  GAP  syntax.  This
 compatibility   with  GAP  is  the  motivation  not  to  use  the  existing
-`GaloisFields`.  This package has  no dependencies part  from `Primes`. The
-speed  is comparable with `GaloisFields`,  slightly slower for prime fields
-and  faster for  composite fields.  Lke GAP3,  we only implements fields of
-order  less  than  2^16.  This  package  comes  with  the  module  `Modulo`
-implementing  modular arithmetic  without restriction  on the  modulus (the
-modulus can be a `BigInt`).
+`GaloisFields`.  The  speed  is  comparable  with  `GaloisFields`, slightly
+slower  for prime fields and faster for composite fields. Lke GAP3, we only
+implement  fields  of  order  less  than  2^16. This package comes with the
+module  `Modulo` implementing modular arithmetic without restriction on the
+modulus (the modulus can be a `BigInt`).
 
-The  Galois field with `p^n` elements is obtained as `GF(p^n)`. Elements of
-Galois  fields of characteristic `p` have all the same type, the parametric
+This only dependency of this package is `Primes`.
+
+The Galois field with `p^n` elements is obtained as `GF(p^n)`. All elements
+of  Galois fields of characteristic `p`  have the same type, the parametric
 type   `FFE{p}`.  The  function   `Z(p^n)`  returns  a   generator  of  the
 multiplicative group of `GF(p^n)`. Other elements of `GF(p^n)` are obtained
 as  powers of `Z(p^n)`, except `0`, obtained as `0*Z(p^n)`. Elements of the
 prime  field can  also be  obtained as  `FFE{p}(n)` (which  is the  same as
-n*Z(p)^0`).
+`n*Z(p)^0`).
 
 ```julia-repl
 julia> a=Z(64)
@@ -124,7 +125,7 @@ julia> inv(m)*m
 module FiniteFields
 include("Modulo.jl")
 using .Modulo
-export Mod, order
+export Modulo, Mod, order
 using Primes: factor, eachfactor, totient
 # next can be used from Primes when exported there
 divisors(n::Integer)=vec(map(prod,Iterators.product((p.^(0:m) 
