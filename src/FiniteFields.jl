@@ -126,10 +126,7 @@ module FiniteFields
 include("Modulo.jl")
 using .Modulo
 export Modulo, Mod, order
-using Primes: factor, eachfactor, totient
-# next can be used from Primes when exported there
-divisors(n::Integer)=vec(map(prod,Iterators.product((p.^(0:m) 
-                             for (p,m) in eachfactor(n))...)))::Vector{Int}
+using Primes: factor, eachfactor, totient, divisors
 
 export GF, FFE, Z, field, degree, char, elements
 

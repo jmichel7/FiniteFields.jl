@@ -7,7 +7,7 @@ version = "0.1.0"
 Primes = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
 
 [compat]
-Primes = "0.5.3, 0.6"
+Primes = "0.5.4, 0.6"
 julia = "1"
 
 [extras]
