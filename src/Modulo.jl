@@ -6,8 +6,8 @@ isa  Int` the result is of type `Mod{UInt64}`. If `n isa BigInt` the result
 is  of  type  `Mod{BigInt}`.  Since  `n`  is  not  encoded in the type, the
 elements  `0` and `1` mod.  `n` cannot be constructed  from the type, which
 causes  some problems for some Julia functionality (for instance `inv` on a
-matrix does not work). For prime moduli `p`, the type `FFE{p}` in `FiniteFields`
-does not have such limitations.
+matrix  does  not  work).  For  prime  moduli  `p`,  the  type  `FFE{p}` in
+`FiniteFields` does not have such limitations.
 
 Example:
 ```julia-repl
@@ -60,11 +60,9 @@ function Mod(a::Mod,n::Integer)
 end
 
 Mod(i::Rational{<:Integer},p)=Mod(numerator(i),p)/Mod(denominator(i),p)
-Base.promote(a::Integer,b::Mod)=(Mod(a,b.n),b)
-Base.promote(b::Mod,a::Integer)=(b,Mod(a,b.n))
-Base.promote(a::Rational{<:Integer},b::Mod)=(Mod(a,b.n),b)
-Base.promote(b::Mod,a::Rational{<:Integer})=(b,Mod(a,b.n))
-Base.promote(a,b::Mod)=(a*one(b),one(a)*b)
+Base.promote(a::Union{Integer,Rational{<:Integer}},b::Mod)=(Mod(a,b.n),b)
+Base.promote(b::Mod,a::Union{Integer,Rational{<:Integer}})=(b,Mod(a,b.n))
+#Base.promote(a,b::Mod)=(a*one(b),one(a)*b)
 Base.zero(n::Mod)=Mod(0,n.n)
 Base.one(n::Mod)=Mod(1,n.n)
 Base.one(::Type{<:Mod})=Mod_(unsigned(1),unsigned(0))
