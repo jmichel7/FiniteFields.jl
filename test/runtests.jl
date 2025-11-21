@@ -1,23 +1,16 @@
 # auto-generated tests from julia-repl docstrings
 using Test, FiniteFields
-function mytest(file::String,src::String,man::String)
-  println(file," ",src)
-  omit=src[end]==';'
-  src=replace(src,"\\\\"=>"\\")
-  exec=repr(MIME("text/plain"),eval(Meta.parse(src)),context=:limit=>true)
-  if omit exec="nothing" end
-  exec=replace(exec,r" *(\n|$)"s=>s"\1")
-  exec=replace(exec,r"\n$"s=>"")
-  man=replace(man,r" *(\n|$)"s=>s"\1")
-  man=replace(man,r"\n$"s=>"")
-  i=1
-  while i<=lastindex(exec) && i<=lastindex(man) && exec[i]==man[i]
-    i=nextind(exec,i)
-  end
-  if exec!=man 
-    print("exec=$(repr(exec[i:end]))\nmanl=$(repr(man[i:end]))\n")
-  end
-  exec==man
+function mytest(file::String,cmd::String,man::String)
+  println(file," ",cmd)
+  exec=repr(MIME("text/plain"),eval(Meta.parse(cmd)),context=:limit=>true)
+  if endswith(cmd,";") return true end
+  exec=replace(exec,r"\s*$"m=>""); exec=replace(exec,r"\s*$"s=>"")
+  exec=replace(exec,r"^\s*"=>"")
+  if exec==man return true end
+  inds=collect(eachindex(exec))
+  i=inds[findfirst(i->i<=lastindex(man) && exec[i]!=man[i],inds)]
+  print("exec=$(repr(exec[i:end]))\nmanl=$(repr(man[i:end]))\n")
+  false
 end
 @testset verbose = true "FiniteFields" begin
 @testset "FiniteFields.jl" begin
@@ -45,14 +38,15 @@ end
 @test mytest("FiniteFields.jl","z^5","FFE{2}: Z₄")
 end
 @testset "Modulo.jl" begin
-@test mytest("Modulo.jl","a=Mod(5,19)","Mod{UInt64}: 5₁₉")
-@test mytest("Modulo.jl","a^2","Mod{UInt64}: 6₁₉")
-@test mytest("Modulo.jl","inv(a)","Mod{UInt64}: 4₁₉")
-@test mytest("Modulo.jl","a*inv(a)","Mod{UInt64}: 1₁₉")
-@test mytest("Modulo.jl","a+2","Mod{UInt64}: 7₁₉")
-@test mytest("Modulo.jl","a*2","Mod{UInt64}: -9₁₉")
-@test mytest("Modulo.jl","a+1//2","Mod{UInt64}: -4₁₉")
-@test mytest("Modulo.jl","Integer(a)","5")
-@test mytest("Modulo.jl","order(a)","9")
+@test mytest("Modulo.jl","a=Mod(3,20)","Mod{UInt64}: 3₂₀")
+@test mytest("Modulo.jl","a^2","Mod{UInt64}: 9₂₀")
+@test mytest("Modulo.jl","inv(a)","Mod{UInt64}: 7₂₀")
+@test mytest("Modulo.jl","a*inv(a)","Mod{UInt64}: 1₂₀")
+@test mytest("Modulo.jl","a+2","Mod{UInt64}: 5₂₀")
+@test mytest("Modulo.jl","a*2","Mod{UInt64}: 6₂₀")
+@test mytest("Modulo.jl","a+1//3","Mod{UInt64}: 10₂₀")
+@test mytest("Modulo.jl","Integer(a)","3")
+@test mytest("Modulo.jl","order(a)","4")
+@test mytest("Modulo.jl","a^4","Mod{UInt64}: 1₂₀")
 end
 end

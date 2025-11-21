@@ -1,5 +1,5 @@
 """
-This module introduces modular arithmetic.
+This module introduces modular arithmetic. It has no dependencies.
 
 The  integer `x` mod. `n` is constructed  by the function `Mod(x,n)`. If `n
 isa  Int` the result is of type `Mod{UInt64}`. If `n isa BigInt` the result
@@ -11,32 +11,35 @@ matrix  does  not  work).  For  prime  moduli  `p`,  the  type  `FFE{p}` in
 
 Example:
 ```julia-repl
-julia> a=Mod(5,19)
-Mod{UInt64}: 5₁₉
+julia> a=Mod(3,20)
+Mod{UInt64}: 3₂₀
 
 julia> a^2
-Mod{UInt64}: 6₁₉
+Mod{UInt64}: 9₂₀
 
-julia> inv(a)
-Mod{UInt64}: 4₁₉
+julia> inv(a) # need to be invertible mod. 20
+Mod{UInt64}: 7₂₀
 
 julia> a*inv(a)
-Mod{UInt64}: 1₁₉
+Mod{UInt64}: 1₂₀
 
 julia> a+2
-Mod{UInt64}: 7₁₉
+Mod{UInt64}: 5₂₀
 
 julia> a*2
-Mod{UInt64}: -9₁₉
+Mod{UInt64}: 6₂₀
 
-julia> a+1//2
-Mod{UInt64}: -4₁₉
+julia> a+1//3 # the denominator of the fraction needs to be inveritble mod. 20
+Mod{UInt64}: 10₂₀
 
 julia> Integer(a) # get back an integer from a
-5
+3
 
 julia> order(a) # multiplicative order of a
-9
+4
+
+julia> a^4
+Mod{UInt64}: 1₂₀
 ```
 """
 module Modulo

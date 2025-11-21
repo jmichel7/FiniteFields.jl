@@ -2,20 +2,18 @@
 This   package  introduces  finite  fields   using  the  GAP  syntax.  This
 compatibility   with  GAP  is  the  motivation  not  to  use  the  existing
 `GaloisFields`.  The  speed  is  comparable  with  `GaloisFields`, slightly
-slower  for prime fields and faster for composite fields. Lke GAP3, we only
-implement  fields  of  order  less  than  2^16. This package comes with the
-module  `Modulo` implementing modular arithmetic without restriction on the
-modulus (the modulus can be a `BigInt`).
+slower for prime fields and faster for composite fields. Like GAP3, we only
+implement fields of order less than 2^16.
 
-This only dependency of this package is `Primes`.
+The only dependency of this package is the package `Primes`.
 
-The Galois field with `p^n` elements is obtained as `GF(p^n)`. All elements
-of  Galois fields of characteristic `p`  have the same type, the parametric
-type   `FFE{p}`.  The  function   `Z(p^n)`  returns  a   generator  of  the
-multiplicative group of `GF(p^n)`. Other elements of `GF(p^n)` are obtained
-as  powers of `Z(p^n)`, except `0`, obtained as `0*Z(p^n)`. Elements of the
-prime  field can  also be  obtained as  `FFE{p}(n)` (which  is the  same as
-`n*Z(p)^0`).
+The  Galois field with  `p^n` elements is  obtained as [`GF`](@ref)`(p^n)`.
+All elements of Galois fields of characteristic `p` have the same type, the
+parametric type [`FFE`](@ref)`{p}`. The function [`Z`](@ref)`(p^n)` returns
+a  generator of  the multiplicative  group of  `GF(p^n)`. Other elements of
+`GF(p^n)`  are  obtained  as  powers  of  `Z(p^n)`, except `0`, obtained as
+`0*Z(p^n)`. Elements of the prime field can also be obtained as `FFE{p}(n)`
+(which is the same as `n*Z(p)^0`).
 
 ```julia-repl
 julia> a=Z(64)
@@ -56,22 +54,22 @@ FFE{2}: Z₈⁵
 julia> F=field(a)
 GF(2^3)
 
-julia> char(F)
+julia> char(F) # the characteristic p
 2
 
 julia> char(a)
 2
 
-julia> degree(F)
+julia> degree(F) # the n in p^n
 3
 
 julia> degree(a)
 3
 
-julia> length(F)
+julia> length(F) # p^n
 8
 
-julia> log(a)
+julia> log(a) # such that a==Z(p^n)^log(a)
 5
 
 julia> elements(F)
@@ -85,8 +83,7 @@ julia> elements(F)
  Z₈⁵
  Z₈⁶
 ```
-
-A  `p`-integral integer or  rational or a  `Mod(,p)` can be  converted to a
+A  `p`-integral rational number or a  `Mod(,p)` can be  converted to a
 prime field element using `FFE{p}` as a constructor.
 
 ```julia-repl
@@ -323,7 +320,10 @@ function iFF(q) # get index of 𝔽_q in FFvec from q (using FFi Dict)
   end
 end
 
-@inbounds GF(q)=FFvec[iFF(q)]
+"""
+`GF(q)` the finite field with `q` elements
+"""
+GF(q)=@inbounds FFvec[iFF(q)]
 
 Base.show(io::IO,F::GF)=print(io,"GF(",char(F),"^",degree(F),")")
 
