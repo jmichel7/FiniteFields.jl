@@ -1,7 +1,7 @@
 name = "FiniteFields"
 uuid = "bbb6641c-4b7b-4120-8cb1-379a8ed7c848"
 authors = ["Jean Michel <jean.michel@imj-prg.fr>"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 Primes = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
