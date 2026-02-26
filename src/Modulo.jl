@@ -97,6 +97,7 @@ Base.conj(x::Mod)=x  # needed for inv(Matrix) to work
 (::Type{T})(x::Mod) where T<:Unsigned=T(x.val)
 
 Base.Integer(x::Mod)=Signed(x)
+Base.Bool(x::Mod)=Bool(x.val)
 
 function Base.show(io::IO, ::MIME"text/plain", x::Mod)
   if !haskey(io,:typeinfo) print(io,typeof(x),": ") end

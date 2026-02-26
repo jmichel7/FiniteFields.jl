@@ -122,10 +122,10 @@ julia> inv(m)*m
 module FiniteFields
 include("Modulo.jl")
 using .Modulo
-export Modulo, Mod, order
-using Primes: factor, eachfactor, totient, divisors
+export Mod, Modulo, order
+using Primes: divisors, factor, totient
 
-export GF, FFE, Z, field, degree, char, elements
+export FFE, GF, Z, char, degree, elements, field
 
 const conway_polynomials=Dict{Tuple{Int,Int},Vector{Int}}(
 (2, 1) => [1],
@@ -244,10 +244,10 @@ struct GF # finite field with q=p^d elements
   dict::Vector{UInt16} # prime field: dict[i+1]=Z(q)^i others: degree
 end
 
-char(x)=0
-@inline char(F::GF)=F.p
-@inline degree(F::GF)=F.d
-@inline Base.length(F::GF)=F.q
+char(::Any)=0
+char(F::GF)=F.p
+degree(F::GF)=F.d
+Base.length(F::GF)=F.q
 
 """
 `FFE{p}` is the type of the elements of a finite field of characteristic `p`.
@@ -257,14 +257,14 @@ struct FFE{p}<:Number
   Fi::UInt16 # where field=FFvec[Fi]
 end
 
-@inline prime(x::FFE)=iszero(x.Fi)
-@inline field(x::FFE{p}) where p=@inbounds FFvec[prime(x) ? iFF(p) : x.Fi]
-@inline char(x::FFE{p}) where p=p
-@inline char(::Type{FFE{p}}) where p=p
+prime(x::FFE)=iszero(x.Fi)
+field(x::FFE{p}) where p=@inbounds FFvec[prime(x) ? iFF(p) : x.Fi]
+char(::FFE{p}) where p=p
+char(::Type{FFE{p}}) where p=p
 # the Zech logarithm of x=Z(q)^i is defined by 1+x=Z(q)^(zech(x,i))
-@inline zech(x::FFE,i)=@inbounds field(x).zech[1+i]
-@inline sizefield(x::FFE{p}) where p=prime(x) ? p : @inbounds FFvec[x.Fi].q
-@inline degree(x::FFE{p}) where p=prime(x) ? 1 : @inbounds FFvec[x.Fi].d
+zech(x::FFE,i)=@inbounds field(x).zech[1+i]
+sizefield(x::FFE{p}) where p=prime(x) ? p : @inbounds FFvec[x.Fi].q
+degree(x::FFE{p}) where p=prime(x) ? 1 : @inbounds FFvec[x.Fi].d
 
 const FFi=Dict{Int,Int}()
 const FFvec=GF[]
@@ -298,7 +298,7 @@ function iFF(q) # get index of 𝔽_q in FFvec from q (using FFi Dict)
         dic[1:div(q-1,p^l[i]-1):q].=l[i]
       end
   #   xprint("conway=",pol)
-      zz=map(i->fill(Mod(0,p),n),1:q)
+      zz=map(_->fill(Mod(0,p),n),1:q)
       zz[1][1]=Mod(1,p)
       for i in 2:q-1
         for j in 2:n zz[i][j]=zz[i-1][j-1] end
@@ -335,7 +335,7 @@ Base.:^(a::FFE{p},n::Integer) where p=prime(a) ?
   clone(a,powermod(a.i,n,p)) : lower(clone(a,mod(widen(a.i)*n,sizefield(a)-1)))
 
 Base.rand(F::GF)=FFE{F.p}(rand(0:F.q-1),F.d==1 ? 0 : iFF(F.q))
-Base.rand(F::GF,n::Int...)=[rand(F) for i in fill(0,n...)]
+Base.rand(F::GF,n::Int...)=[rand(F) for _ in fill(0,n...)]
 Base.rand(::Type{FFE{p}},n::Integer...) where p=FFE{p}.(rand(0:p-1,n...),0)
 
 """
@@ -382,12 +382,12 @@ Base.promote_rule(::Type{FFE{p}},::Type{<:Rational{<:Integer}}) where p=FFE{p}
 
 Base.copy(a::FFE{p}) where p=clone(a,a.i)
 Base.one(::Type{FFE{p}}) where p=FFE{p}(1,0)
-Base.one(x::FFE{p}) where p=FFE{p}(1,0)
+Base.one(::FFE{p}) where p=FFE{p}(1,0)
 Base.zero(::Type{FFE{p}}) where p=FFE{p}(0,0)
-Base.zero(x::FFE{p}) where p=FFE{p}(0,0)
+Base.zero(::FFE{p}) where p=FFE{p}(0,0)
 Base.abs(a::FFE)=a
 Base.conj(a::FFE)=a
-Base.gcd(x::FFE,y::FFE)=one(x)
+Base.gcd(x::FFE,::FFE)=one(x)
 Base.gcd(x::AbstractVector{<:FFE})=one(x[1])
 
 function Base.cmp(x::FFE, y::FFE)
