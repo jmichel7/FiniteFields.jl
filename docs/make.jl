@@ -1,4 +1,4 @@
-using Documenter, FiniteFields
+using Documenter, FiniteFields, LinearAlgebra
 
 DocMeta.setdocmeta!(FiniteFields, :DocTestSetup, :(using FiniteFields); recursive=true)
 

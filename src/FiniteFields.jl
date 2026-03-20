@@ -72,6 +72,9 @@ julia> length(F) # p^n
 julia> log(a) # such that a==Z(p^n)^log(a)
 5
 
+julia> a in F
+true
+
 julia> elements(F)
 8-element Vector{FFE{2}}:
    0
@@ -117,6 +120,11 @@ julia> inv(m)*m
  0  1  0  0
  0  0  1  0
  0  0  0  1
+```
+Finally, one can compare fields:
+```julia-repl
+julia> issubset(GF(2),GF(4))
+true
 ```
 """
 module FiniteFields
@@ -266,6 +274,8 @@ char(::Type{FFE{p}}) where p=p
 zech(x::FFE,i)=@inbounds field(x).zech[1+i]
 sizefield(x::FFE{p}) where p=prime(x) ? p : @inbounds FFvec[x.Fi].q
 degree(x::FFE{p}) where p=prime(x) ? 1 : @inbounds FFvec[x.Fi].d
+Base.in(x::FFE{p},F::GF) where p=char(x)==char(F) && degree(F)%degree(x)==0
+Base.issubset(F1::GF,F2::GF)=char(F1)==char(F2) && degree(F2)%degree(F1)==0
 
 const FFi=Dict{Int,Int}()
 const FFvec=GF[]
@@ -555,7 +565,7 @@ end
 `tr(x::FFE{p},F1::GF,F2::GF=GF(p))`
 
 Let `F2=GF(q)` where `q` is a power of `p`, and let `F1=GF(q^n)`. The trace
-from `F1` to `F2` sends `x∈F1` to ``∑_{i=0}^{n-1}x^{q^i}∈F2``.
+from `F1` to `F2` sends `x∈F1` to ``∑_{i=0}^{n-1}x^{q^i}`` `∈F2`.
 ```julia-repl
 julia> tr(Z(9),GF(9))
 FFE{3}: 1
@@ -564,22 +574,12 @@ julia> tr(Z(9),GF(81))
 FFE{3}: -1
 ```
 """
-function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF)where p
-  if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
-  if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
-  if F1.d%field(x).d!=0 error(x," must be in ",F1) end
+function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+  if !(x in F1) error(x," must be in ",F1) end
+  if !issubset(F2,F1) error(F2," must be a subfield of ",F1) end
   res=x
-  for _ in 1:div(F1.d,F2.d)-1
-    x=x^F2.q
-    res+=x
-  end
-  res
-end
-function LinearAlgebra.tr(x::FFE{p},F1::GF)where p
-  if F1.p!=p || F1.d%field(x).d!=0 error(x," must be in ",F1) end
-  res=x
-  for _ in 1:F1.d-1
-    x=x^p
+  for _ in 1:div(degree(F1),degree(F2))-1
+    x=x^length(F2)
     res+=x
   end
   res
@@ -593,7 +593,7 @@ end
 `norm(x::FFE{p},F1::GF,F2::GF=GF(p))`
 
 Let `F2=GF(q)` where `q` is a power of `p`, and let `F1=GF(q^n)`. The norm
-from `F1` to `F2` sends `x∈F1` to ``∏_{i=0}^{n-1}x^{q^i}∈F2``.
+from `F1` to `F2` sends `x∈F1` to ``∏_{i=0}^{n-1}x^{q^i}`` `∈F2`.
 ```julia-repl
 julia> norm(Z(64),GF(64),GF(8))
 FFE{2}: Z₈
@@ -602,25 +602,10 @@ julia> norm(Z(4),GF(64),GF(8))
 FFE{2}: 1
 ```
 """
-function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF)where p
-  if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
-  if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
-  if F1.d%field(x).d!=0 error(x," must be in ",F1) end
-  res=x
-  for _ in 1:div(F1.d,F2.d)-1
-    x=x^F2.q
-    res*=x
-  end
-  res
-end
-function LinearAlgebra.norm(x::FFE{p},F1::GF)where p
-  if F1.p!=p || F1.d%field(x).d!=0 error(x," must be in ",F1) end
-  res=x
-  for _ in 1:F1.d-1
-    x=x^p
-    res*=x
-  end
-  res
+function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+  if !(x in F1) error(x," must be in ",F1) end
+  if !issubset(F2,F1) error(F2," must be a subfield of ",F1) end
+  x^div(length(F1)-1,length(F2)-1)
 end
 function LinearAlgebra.norm(x::FFE)
   error("Field F1 must be specified")

@@ -1,5 +1,5 @@
 # auto-generated tests from julia-repl docstrings
-using Test, FiniteFields
+using Test, FiniteFields, LinearAlgebra
 function mytest(file::String,cmd::String,man::String)
   println(file," ",cmd)
   exec=repr(MIME("text/plain"),eval(Meta.parse(cmd)),context=:limit=>true)
@@ -8,7 +8,8 @@ function mytest(file::String,cmd::String,man::String)
   exec=replace(exec,r"^\s*"=>"")
   if exec==man return true end
   inds=collect(eachindex(exec))
-  i=inds[findfirst(i->i<=lastindex(man) && exec[i]!=man[i],inds)]
+  i=findfirst(i->i<=lastindex(man) && exec[i]!=man[i],inds)
+  if i==nothing i=ncodeunits(man)+1 else i=inds[i] end
   print("exec=$(repr(exec[i:end]))\nmanl=$(repr(man[i:end]))\n")
   false
 end
@@ -30,12 +31,18 @@ end
 @test mytest("FiniteFields.jl","degree(a)","3")
 @test mytest("FiniteFields.jl","length(F)","8")
 @test mytest("FiniteFields.jl","log(a)","5")
+@test mytest("FiniteFields.jl","a in F","true")
 @test mytest("FiniteFields.jl","elements(F)","8-element Vector{FFE{2}}:\n   0\n   1\n  Z₈\n Z₈²\n Z₈³\n Z₈⁴\n Z₈⁵\n Z₈⁶")
 @test mytest("FiniteFields.jl","FFE{19}(2)","FFE{19}: 2")
 @test mytest("FiniteFields.jl","FFE{19}(5//3)","FFE{19}: 8")
 @test mytest("FiniteFields.jl","FFE{19}(Mod(2,19))","FFE{19}: 2")
+@test mytest("FiniteFields.jl","issubset(GF(2),GF(4))","true")
 @test mytest("FiniteFields.jl","z=Z(16)","FFE{2}: Z₁₆")
 @test mytest("FiniteFields.jl","z^5","FFE{2}: Z₄")
+@test mytest("FiniteFields.jl","tr(Z(9),GF(9))","FFE{3}: 1")
+@test mytest("FiniteFields.jl","tr(Z(9),GF(81))","FFE{3}: -1")
+@test mytest("FiniteFields.jl","norm(Z(64),GF(64),GF(8))","FFE{2}: Z₈")
+@test mytest("FiniteFields.jl","norm(Z(4),GF(64),GF(8))","FFE{2}: 1")
 end
 @testset "Modulo.jl" begin
 @test mytest("Modulo.jl","a=Mod(3,20)","Mod{UInt64}: 3₂₀")
