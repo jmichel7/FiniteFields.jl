@@ -1,7 +1,7 @@
 name = "FiniteFields"
 uuid = "bbb6641c-4b7b-4120-8cb1-379a8ed7c848"
 authors = ["Jean Michel <jean.michel@imj-prg.fr>"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
