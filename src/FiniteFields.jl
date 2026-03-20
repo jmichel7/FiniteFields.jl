@@ -564,16 +564,29 @@ julia> tr(Z(9),GF(81))
 FFE{3}: -1
 ```
 """
-function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF)where p
   if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
   if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
-  if F1.d%FFvec[x.Fi].d!=0 error(x," must be in ",F1) end
+  if F1.d%field(x).d!=0 error(x," must be in ",F1) end
   res=x
-  for i in 1:div(F1.d,F2.d)-1
+  for _ in 1:div(F1.d,F2.d)-1
     x=x^F2.q
     res+=x
   end
   res
+end
+function LinearAlgebra.tr(x::FFE{p},F1::GF)where p
+  if F1.p!=p || F1.d%field(x).d!=0 error(x," must be in ",F1) end
+  res=x
+  for _ in 1:F1.d-1
+    x=x^p
+    res+=x
+  end
+  res
+end
+function LinearAlgebra.tr(x::FFE)
+  error("Field F1 must be specified")
+  return nothing
 end
 
 """
@@ -589,16 +602,29 @@ julia> norm(Z(4),GF(64),GF(8))
 FFE{2}: 1
 ```
 """
-function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF)where p
   if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
   if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
-  if F1.d%FFvec[x.Fi].d!=0 error(x," must be in ",F1) end
+  if F1.d%field(x).d!=0 error(x," must be in ",F1) end
   res=x
-  for i in 1:div(F1.d,F2.d)-1
+  for _ in 1:div(F1.d,F2.d)-1
     x=x^F2.q
     res*=x
   end
   res
+end
+function LinearAlgebra.norm(x::FFE{p},F1::GF)where p
+  if F1.p!=p || F1.d%field(x).d!=0 error(x," must be in ",F1) end
+  res=x
+  for _ in 1:F1.d-1
+    x=x^p
+    res*=x
+  end
+  res
+end
+function LinearAlgebra.norm(x::FFE)
+  error("Field F1 must be specified")
+  return nothing
 end
 
 end
