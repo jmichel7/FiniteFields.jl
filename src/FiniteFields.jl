@@ -124,6 +124,7 @@ include("Modulo.jl")
 using .Modulo
 export Mod, Modulo, order
 using Primes: divisors, factor, totient
+using LinearAlgebra: LinearAlgebra
 
 export FFE, GF, Z, char, degree, elements, field
 
@@ -548,6 +549,56 @@ end
 function Modulo.order(x::FFE{p}) where p
   if iszero(x) error(x," must be invertible") end
   div(sizefield(x)-1,gcd(log(x),sizefield(x)-1))
+end
+
+"""
+`tr(x::FFE{p},F1::GF,F2::GF=GF(p))`
+
+Let `F2=GF(q)` where `q` is a power of `p`, and let `F1=GF(q^n)`. The trace
+from `F1` to `F2` sends `x∈F1` to ``∑_{i=0}^{n-1}x^{q^i}∈F2``.
+```julia-repl
+julia> tr(Z(9),GF(9))
+FFE{3}: 1
+
+julia> tr(Z(9),GF(81))
+FFE{3}: -1
+```
+"""
+function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+  if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
+  if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
+  if F1.d%FFvec[x.Fi].d!=0 error(x," must be in ",F1) end
+  res=x
+  for i in 1:div(F1.d,F2.d)-1
+    x=x^F2.q
+    res+=x
+  end
+  res
+end
+
+"""
+`norm(x::FFE{p},F1::GF,F2::GF=GF(p))`
+
+Let `F2=GF(q)` where `q` is a power of `p`, and let `F1=GF(q^n)`. The norm
+from `F1` to `F2` sends `x∈F1` to ``∏_{i=0}^{n-1}x^{q^i}∈F2``.
+```julia-repl
+julia> norm(Z(64),GF(64),GF(8))
+FFE{2}: Z₈
+
+julia> norm(Z(4),GF(64),GF(8))
+FFE{2}: 1
+```
+"""
+function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF=GF(p))where p
+  if F1.p!=p || F2.p!=p error(F1," and ",F2," must be of characteristic ",p) end
+  if F1.d%F2.d!=0 error(F2," must be a subfield of ",F1) end
+  if F1.d%FFvec[x.Fi].d!=0 error(x," must be in ",F1) end
+  res=x
+  for i in 1:div(F1.d,F2.d)-1
+    x=x^F2.q
+    res*=x
+  end
+  res
 end
 
 end

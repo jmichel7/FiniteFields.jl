@@ -4,9 +4,11 @@ authors = ["Jean Michel <jean.michel@imj-prg.fr>"]
 version = "0.1.2"
 
 [deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Primes = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
 
 [compat]
+LinearAlgebra = "1"
 Primes = "0.5.4, 0.6"
 Test = "1.6"
 julia = "1"
