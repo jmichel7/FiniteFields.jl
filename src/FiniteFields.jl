@@ -271,7 +271,7 @@ const FFvec=GF[]
 
 function iFF(q) # get index of 𝔽_q in FFvec from q (using FFi Dict)
   get!(FFi,q) do
-    if q>2^16 error(q,">2^16") end
+    if q≥2^16 error(q,"≥2^16") end
     l=factor(q)
     if length(l)>1 error(q," should be a prime power") end
     p,n=first(l)
