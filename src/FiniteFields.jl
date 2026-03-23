@@ -584,10 +584,7 @@ function LinearAlgebra.tr(x::FFE{p},F1::GF,F2::GF=GF(p))where p
   end
   res
 end
-function LinearAlgebra.tr(x::FFE)
-  error("Field F1 must be specified")
-  return nothing
-end
+LinearAlgebra.tr(::FFE)=error("usage: tr(x::FFE,F1::GF,F2::GF)")
 
 """
 `norm(x::FFE{p},F1::GF,F2::GF=GF(p))`
@@ -607,9 +604,6 @@ function LinearAlgebra.norm(x::FFE{p},F1::GF,F2::GF=GF(p))where p
   if !issubset(F2,F1) error(F2," must be a subfield of ",F1) end
   x^div(length(F1)-1,length(F2)-1)
 end
-function LinearAlgebra.norm(x::FFE)
-  error("Field F1 must be specified")
-  return nothing
-end
+LinearAlgebra.norm(::FFE)=error("usage: norm(x::FFE,F1::GF,F2::GF)")
 
 end
